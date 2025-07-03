@@ -26,27 +26,18 @@ headerBtns.forEach(btn => {
     btn.classList.add('active');
   });
 });
-//=============================================================Menu toggle
-const menuState = document.querySelector(".menu-state")
-const closeMenu = document.querySelector(".close")
-const openMenu = document.querySelector(".menu")
-const menu = document.querySelector('aside')
-let sideBar = true
-function toggleMenu(){
-    if(sideBar){
-        menu.style.display = "none";
-        sideBar = false
-    }else{
-        menu.style.display = "block";
-        sideBar = true
-    }
+//=============================================================Toggle function
+
+function toggleContent(contentID) {
+    const container = document.getElementById(contentID);
+    container.classList.toggle("hidden");
 }
 //=============================================================Full screen
 const full = document.querySelector(".full")
 const windowed = document.querySelector(".windowed")
 const screenState = document.querySelector('.screen-state')
 screenState.addEventListener('click', () => togglebtn(full, windowed));
-
+//todo use toggleContent function instead
 function togglebtn(svg1, svg2){
     if (svg1.style.display === 'none') {
         svg1.style.display = 'inline';
@@ -70,46 +61,24 @@ function toggleFullScreen() {
     }
   }
 }
-//=============================Display Container
-    function displayFunction(containerID) {
-    const container = document.getElementById(containerID);
-    if (container.style.display === 'none' ) {
-      container.style.display = 'block';
-    } else {
-      container.style.display = 'none';
-    }
-  }
 //=============================Popup functions
+
 function addColumn() {
     const headerRow = document.querySelector('#headerRow');
     if (!headerRow) return;
-
     const colIndex = headerRow.cells.length - 1;
     const newHeader = document.createElement('th');
-    newHeader.innerHTML = `<input type="text" placeholder="Column ${colIndex + 1}" oninput="renameHeader(this, ${colIndex})"> 
-`;
+    newHeader.innerHTML = `<input type="text" placeholder="Column ${colIndex + 1}" oninput="renameHeader(this, ${colIndex})">`;
     headerRow.insertBefore(newHeader, headerRow.lastElementChild);
-
     const rows = document.querySelectorAll('#popupTable tbody tr');
     rows.forEach(row => {
       const newCell = document.createElement('td');
-      newCell.contentEditable = "false";
+      newCell.contentEditable = "true";
       row.insertBefore(newCell, row.lastElementChild);
     });
   }
 
-  function renameHeader(input, index) {
+   function renameHeader(input, index) {
     input.placeholder = input.value || `Column ${index + 1}`;
   }
 
-  function toggleEdit(button) {
-    const row = button.closest('tr');
-    const isEditing = row.classList.toggle('edit-mode');
-    const cells = row.querySelectorAll('td');
-    cells.forEach((cell, i) => {
-      if (i < cells.length - 1) {
-        cell.contentEditable = isEditing;
-      }
-    });
-    button.textContent = isEditing ? 'Save' : 'Edit';
-  }
