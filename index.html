@@ -48,11 +48,14 @@
             </div>
           <div class="features">
             <input type="color" id="color-picker" name="color" value="#007bff">
+            <button onclick="resetView()" class="home">
+                        <span class="icon home-icon"></span>
+            </button>
             <button onclick="toggleFullScreen()" class="nav-icon screen-state">
                 <svg class="full" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5"><path d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z"/></svg>
                 <svg class="windowed" style="display:none;" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5"><path d="M240-120v-120H120v-80h200v200h-80Zm400 0v-200h200v80H720v120h-80ZM120-640v-80h120v-120h80v200H120Zm520 0v-200h80v120h120v80H640Z"/></svg>
             </button>
-            <button onclick="toggleMenu()" class="menu-state">
+            <button onclick="toggleContent('menu')" class="menu-state">
                         <span class="icon menu-icon"></span>
             </button>
         </div>
@@ -63,7 +66,7 @@
                         <div id="coordinates"></div>
         </div>
 
-        <aside  class="menu" >
+        <aside  class="menu" id="menu">
             <header>
             <button id="data-btn" class="header-btn active" >
                 <span class="icon data-icon"></span>
@@ -90,7 +93,7 @@
                     </button>
                     <input class="input" type="file" id="geojson-file" style="display: none;" accept=".geojson, .json" />
                     <!-- Import Raster -->
-                    <button onclick="displayFunction('raster-container')" id="import-raster" >
+                    <button onclick="toggleContent('raster-container')" id="import-raster" >
                         <span class="icon raster-icon"></span>
                     </button>
                     <!-- Remove Master Layer -->
@@ -100,7 +103,7 @@
                 </div>
                 <div>
                 <!--******* Raster Container -->
-                    <div id="raster-container" style="padding: 1em; max-width: 300px; display: none;">
+                    <div id="raster-container" class="hidden" style="padding: 1em; max-width: 300px;">
                         <label>Upload Image:
                             <input type="file" id="rasterFileInput" accept="image/*">
                         </label><br><br>
@@ -128,19 +131,19 @@
                    <!-- analyse -->
             <div class="analyse-content side-content" style="display: none;" >
                                    <!-- Search Point -->
-                <button onclick="displayFunction('search-point-container')" class="analyse-btn">Search Point</button>
-                <div id="search-point-container"  style="display: block;"> 
+                <button onclick="toggleContent('search-point-container')" class="analyse-btn">Search Point</button>
+                <div id="search-point-container" > 
                     <div class="analyse-container">
                         <input type="number" id="lat" placeholder="Lat">
-                        <input type="number" id="log" placeholder="Log">
+                        <input type="number" id="lng" placeholder="Log">
                         <button id="search-point">
                             <span class="icon search-icon"></span>
                         </button>
                     </div>
                 </div>
                                     <!-- Destination Point -->
-                <button onclick="displayFunction('destination-container')" class="analyse-btn">Destination Point</button>
-                <div id="destination-container" style="display: none;">
+                <button onclick="toggleContent('destination-container')" class="analyse-btn">Destination Point</button>
+                <div id="destination-container" class="hidden">
                     <div class="analyse-container">
                     <input type="number" id="lat-start" placeholder="Lat">
                     <input type="number" id="log-start" placeholder="Log">
@@ -164,8 +167,8 @@
                     </div>
                 </div>
                                    <!-- Bearing Point -->
-                <button onclick="displayFunction('bearing-container')" class="analyse-btn">Bearing</button>
-                <div id="bearing-container" style="display: none;">
+                <button onclick="toggleContent('bearing-container')" class="analyse-btn">Bearing</button>
+                <div id="bearing-container" class="hidden">
                     <div class="analyse-container">
                         <input type="number" id="lat-a" placeholder="Lat A">
                         <input type="number" id="lng-a" placeholder="Lng A">
@@ -183,8 +186,8 @@
                     </div>
                 </div>
                                     <!-- Distance Point -->
-                <button onclick="displayFunction('distance-container')" class="analyse-btn">Distance</button>
-                <div id="distance-container" style="display: none;">
+                <button onclick="toggleContent('distance-container')" class="analyse-btn">Distance</button>
+                <div id="distance-container" class="hidden">
                     <div class="analyse-container">
                                 <input type="number" id="lat-a-distance" placeholder="Lat A">
                                 <input type="number" id="lng-a-distance" placeholder="Lng A">
@@ -200,7 +203,7 @@
                                     <button  onclick="distance()">
                                         <span class="icon search-icon"></span>
                                     </button>
-                                    <button  onclick="removeDistance()">
+                                    <button  onclick="clearDistance()">
                                         <span class="icon clear-icon"></span>
                                     </button>
                                 </div>
@@ -218,7 +221,8 @@
                                 GISboon is a lightweight, web-based tool built for quick geospatial work. You can import GeoJSON and images, draw features, and perform essential calculations like distance, bearing, and destination points — all in one intuitive interface.
                                 <br>The map uses the <b>Web Mercator projection</b> (EPSG3857) for accurate and familiar geographic visualization.
                                 <br>Powered by Leaflet and Turf.js, GISboon runs entirely in your browser with automatic local storage.
-                                <br>It’s open-source — feel free to explore and use the code on <a class="link" href="">GitHub</a>.
+                                <!--                                <br>It’s open-source — feel free to explore and use the code on <a class="link" href="">GitHub</a>.
+-->
                             </p>
                         </section>
 
@@ -239,7 +243,14 @@
                             <li>Save your map as a PNG file</li>
                             </ul>
                         </section>
-
+                            <section>
+                                <h2>Layer Management</h2>
+                                <ul>
+                                    <li>All imported <b>GeoJSON layers</b> and drawn features are combined into a single <b>Master Layer</b>.</li>
+                                    <li>The imported <b>image file</b> is stored separately in a <b>Raster Layer</b>.</li>
+                                    <li>Both layers are automatically saved to your browser’s local storage.</li>
+                                </ul>
+                            </section>
                         <section>
                             <h2>Getting Started</h2>
 
@@ -295,7 +306,7 @@
                                 <li>Table Operations
                                     <ul>
                                         <li><b>Add column</b>: Click "Add column" button</li>
-                                        <li><b>Edit data</b>: Click "Edit" to enter/edit values</li>
+                                        <!--<li><b>Edit data</b>: Click "Edit" to enter/edit values</li>-->
                                         <li><b>Delete column</b>: Just leave the Column empty</li>
                                     </ul>
                                 </li>
@@ -324,7 +335,39 @@
                             </li>
                             </ul>
                         </section>
-
+                        <section>
+                                <h2>Basic Analysis Tools</h2>
+                                <p>
+                                    GISboon provides essential geospatial analysis tools for quick calculations directly on the map:
+                                </p>
+                                <ul>
+                                    <li><b>Search Point:</b> Enter latitude and longitude to locate and mark a point on the map.</li>
+                                    <li><b>Destination Point:</b> Provide a starting point, distance, and bearing to calculate and mark a destination point.</li>
+                                    <li><b>Calculate Bearing:</b> Determine the compass bearing from one point to another.</li>
+                                    <li><b>Calculate Distance:</b> Select two points to compute the distance between them.</li>
+                                </ul>
+                                <h3>How It Works:</h3>
+                                <ul>
+                                    <li>When you perform a calculation, markers appear on the map:
+                                        <ul>
+                                            <li><b>Yellow marker:</b> Represents your input point.</li>
+                                            <li><b>Green marker:</b> Represents the result of the calculation.</li>
+                                        </ul>
+                                    </li>
+                                    <li>To keep a result point permanently:
+                                        <ul>
+                                            <li>Add a new marker at the result location using the drawing tool (Point).</li>
+                                            <li>This saves it as part of your <b>Master Layer</b>.</li>
+                                        </ul>
+                                    </li>
+                                    <li>To remove any marker:
+                                        <ul>
+                                            <li>Use the <b>Eraser tool</b> from the drawing tools.</li>
+                                        </ul>
+                                    </li>
+                                    <li>Calculated markers are temporary unless manually saved to your Master Layer.</li>
+                                </ul>
+                            </section>
                         <section>
                             <h2>Technical Details</h2>
                             <h3>Supported Formats</h3>
@@ -344,10 +387,10 @@
                             </ul>
 
                             <div class="contact">
-                                    <p><strong>Need help or found a bug?</strong> Please <a class="link" href="mailto:wahibaadidi1@gmail.com">contact us</a>.</p>
+                                    <p><strong>Need help or found a bug?</strong> Please <span class="link">contact me</span>: wahibaadidi1@gmail.com.</p>
                             </div>
                         </section>
-                        </div>
+                </div>                
             </div>
 
         </aside>
