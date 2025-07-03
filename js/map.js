@@ -11,13 +11,13 @@
             gutters: ['CodeMirror-lint-markers'],
             lint: true
 });  
-var map = L.map('map').setView([51.505, -0.09], 13);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+
 
 //======================================================Try to get user's location
+let latS = 33.5731
+let lngS = -7.5898
+var map = L.map('map').setView([latS, lngS], 6);
+
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
         function(position) {
@@ -43,7 +43,10 @@ if (navigator.geolocation) {
     console.log("Geolocation is not supported by this browser");
     alert("Geolocation is not supported by this browser")
 }
-
+//======================================= Reset view
+function resetView(){
+  map.setView([latS, lngS], 6); // Use setView on the existing map instance
+};
 //======================================================baseLayers
 var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
   maxZoom: 20,
@@ -109,7 +112,7 @@ if (storedLayer) {
 
         const tds = headers.map(key => `
           <td contenteditable="false">${feature.properties[key]}</td>
-        `).join('') + `<td><button onclick="toggleEdit(this)">Edit</button></td>`;
+        `).join('') + `<td><button">Data</button></td>`;
 
         popupEl.innerHTML = `
           <div style="margin-bottom: 10px;">
@@ -315,7 +318,7 @@ map.on('pm:create', function (e) {
       <tbody>
         <tr>
           <td contenteditable="false"></td>
-          <td><button onclick="toggleEdit(this)">Edit</button></td>
+          <td><button>Data</button></td>
         </tr>
       </tbody>
     </table>
@@ -448,7 +451,7 @@ document.getElementById('geojson-file').addEventListener('change', function (eve
 
                           let tds = headers.map(key => `
                             <td contenteditable="false">${feature.properties[key]}</td>
-                          `).join('') + `<td><button onclick="toggleEdit(this)">Edit</button></td>`;
+                          `).join('') + `<td><button>Data</button></td>`;
 
                           popupEl.innerHTML = `
                             <div style="margin-bottom: 10px;">
