@@ -87,8 +87,7 @@ if (storedLayer) {
     const generatePopupContent = (properties) => {
       return Object.entries(properties).map(([key, value]) => `<strong>${key}:</strong> ${value}`).join('<br>');
     };
-
-    // onEachFeature handler to bind popup
+        // onEachFeature handler to bind popup
     const onEachFeature = (feature, layer) => {
       if (feature.properties) {
         const popupEl = document.createElement('div');
@@ -112,7 +111,7 @@ if (storedLayer) {
 
         const tds = headers.map(key => `
           <td contenteditable="false">${feature.properties[key]}</td>
-        `).join('') + `<td><button">Data</button></td>`;
+        `).join('') + `<td><button onclick="toggleEdit(this)">Edit</button></td>`;
 
         popupEl.innerHTML = `
           <div style="margin-bottom: 10px;">
@@ -318,7 +317,7 @@ map.on('pm:create', function (e) {
       <tbody>
         <tr>
           <td contenteditable="false"></td>
-          <td><button>Data</button></td>
+          <td><button onclick="toggleEdit(this)">Edit</button></td>
         </tr>
       </tbody>
     </table>
@@ -336,7 +335,6 @@ map.on('pm:create', function (e) {
   // Update GeoJSON editor
   updateEditorFromMasterLayer();
 });
-
 function saveTableData(button) {
   const popup = button.closest('div');
   const table = popup.querySelector('#popupTable');
@@ -414,9 +412,8 @@ document.getElementById('geojson-file').addEventListener('change', function (eve
         const reader = new FileReader();
         reader.onload = function (e) {
             try {
-                const geojsonData = JSON.parse(e.target.result); 
-                
-                importedLayer = L.geoJSON(geojsonData, {
+                const geojsonData = JSON.parse(e.target.result);          
+                 importedLayer = L.geoJSON(geojsonData, {
                     // Apply style based on GeoJSON properties
                     style: function(feature) {
                         return {
@@ -451,7 +448,7 @@ document.getElementById('geojson-file').addEventListener('change', function (eve
 
                           let tds = headers.map(key => `
                             <td contenteditable="false">${feature.properties[key]}</td>
-                          `).join('') + `<td><button>Data</button></td>`;
+                          `).join('') + `<td><button onclick="toggleEdit(this)">Edit</button></td>`;
 
                           popupEl.innerHTML = `
                             <div style="margin-bottom: 10px;">
