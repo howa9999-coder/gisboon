@@ -62,23 +62,36 @@ function toggleFullScreen() {
   }
 }
 //=============================Popup functions
-
 function addColumn() {
     const headerRow = document.querySelector('#headerRow');
     if (!headerRow) return;
+
     const colIndex = headerRow.cells.length - 1;
     const newHeader = document.createElement('th');
-    newHeader.innerHTML = `<input type="text" placeholder="Column ${colIndex + 1}" oninput="renameHeader(this, ${colIndex})">`;
+    newHeader.innerHTML = `<input type="text" placeholder="Column ${colIndex + 1}" oninput="renameHeader(this, ${colIndex})"> 
+`;
     headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+
     const rows = document.querySelectorAll('#popupTable tbody tr');
     rows.forEach(row => {
       const newCell = document.createElement('td');
-      newCell.contentEditable = "true";
+      newCell.contentEditable = "false";
       row.insertBefore(newCell, row.lastElementChild);
     });
   }
 
-   function renameHeader(input, index) {
+  function renameHeader(input, index) {
     input.placeholder = input.value || `Column ${index + 1}`;
   }
 
+  function toggleEdit(button) {
+    const row = button.closest('tr');
+    const isEditing = row.classList.toggle('edit-mode');
+    const cells = row.querySelectorAll('td');
+    cells.forEach((cell, i) => {
+      if (i < cells.length - 1) {
+        cell.contentEditable = isEditing;
+      }
+    });
+    button.textContent = isEditing ? 'Save' : 'Edit';
+  }
